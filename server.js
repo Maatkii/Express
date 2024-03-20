@@ -1,20 +1,52 @@
 const express = require("express");
-
+const mongoose = require("mongoose");
+const Person = require("./personModel");
+require("dotenv").config();
 const app = express();
 const PORT = 4000;
-app.listen(PORT, () => console.log(`Server running on Port ${PORT}`));
-const today = new Date();
-const day = today.getDay();
-const hours = today.getHours();
+const MONGO_URI = process.env.MONGO_URI;
+app.use(express.json());
 
-if (day >= 1 && day <= 5 && hours >= 9 && hours < 17) {
-  app.get("/", (req, res) => {
-    app.use(express.static(__dirname + "/public"));
-    res.sendFile(__dirname + "/public/index.html");
-  });
-} else {
-  app.get("/", (req, res) => {
-    app.use(express.static(__dirname + "/Closed"));
-    res.sendFile(__dirname + "/Closed/index.html");
-  });
-}
+mongoose
+  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("MongoDB connection error:", err));
+app.use(express.json());
+
+const arrayOfPeople = [
+  { name: "Eya", age: "20", phoneNumber: ["55158180"] },
+  { name: "isra", age: "21", phoneNumber: ["23256547"] },
+];
+
+Person.create(arrayOfPeople, function (err, people) {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(people);
+  }
+});
+Person.find({ name: "grorge gik" }, function (err, people) {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(people);
+  }
+});
+Person.findOne({ phoneNumber: "23256547" }, function (err, people) {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(people);
+  }
+});
+const personId = "";
+Person.findById(personId, function (err, people) {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(people);
+  }
+});
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
